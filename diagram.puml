@@ -1,0 +1,46 @@
+@startuml
+skinparam classAttributeIconSize 0
+
+interface Builder {
+  + SetName(name: string): Builder
+  + SetModel(model: string): Builder
+  + SetYear(year: int): Builder
+}
+
+class Bicycle <<Struct>> {
+  - name: string
+  - model: string
+  - year: int
+  + Name(): string
+  + Model(): string
+  + Year(): int
+  + String(): string
+}
+
+class ObjectBuilder <<Struct>> {
+  - name: string
+  - model: string
+  - year: int
+  + SetName(name: string): Builder
+  + SetModel(model: string): Builder
+  + SetYear(year: int): Builder
+  + Build(): (Bicycle, error)
+}
+
+class SpecBuilder <<Struct>> {
+  - sb: strings.Builder
+  + SetName(name: string): Builder
+  + SetModel(model: string): Builder
+  + SetYear(year: int): Builder
+  + Build(): (string, error)
+}
+
+class Director <<Struct>> {
+  + MakeMountainBike(b: Builder)
+  + MakeRoadBike(b: Builder)
+}
+
+Builder <|.. ObjectBuilder : implements
+Builder <|.. SpecBuilder : implements
+ObjectBuilder ..> Bicycle : builds
+Director o--> Builder : uses
