@@ -12,10 +12,6 @@ type Bicycle struct {
 	year  int
 }
 
-func (b Bicycle) Name() string  { return b.name }
-func (b Bicycle) Model() string { return b.model }
-func (b Bicycle) Year() int     { return b.year }
-
 func (b Bicycle) String() string {
 	return fmt.Sprintf("Bicycle [Name=%s, Model=%s, Year=%d]", b.name, b.model, b.year)
 }
@@ -30,10 +26,6 @@ type ObjectBuilder struct {
 	name  string
 	model string
 	year  int
-}
-
-func NewObjectBuilder() *ObjectBuilder {
-	return &ObjectBuilder{}
 }
 
 func (b *ObjectBuilder) SetName(name string) Builder {
@@ -72,12 +64,6 @@ type SpecBuilder struct {
 	sb strings.Builder
 }
 
-func NewSpecBuilder() *SpecBuilder {
-	b := &SpecBuilder{}
-	b.sb.WriteString("BICYCLE TECHNICAL SPECIFICATION\n")
-	return b
-}
-
 func (b *SpecBuilder) SetName(name string) Builder {
 	b.sb.WriteString(fmt.Sprintf("Brand/Name: %s\n", name))
 	return b
@@ -114,7 +100,7 @@ func (d *Director) MakeRoadBike(b Builder) {
 func main() {
 	director := &Director{}
 
-	objBuilder := NewObjectBuilder()
+	objBuilder := &ObjectBuilder{}
 	director.MakeRoadBike(objBuilder)
 
 	roadBike, err := objBuilder.Build()
@@ -127,7 +113,7 @@ func main() {
 
 	fmt.Println()
 
-	specBuilder := NewSpecBuilder()
+	specBuilder := &SpecBuilder{}
 	director.MakeMountainBike(specBuilder)
 
 	specSheet, _ := specBuilder.Build()
