@@ -15,6 +15,22 @@ type Bicycle struct {
 func (b Bicycle) String() string {
 	return fmt.Sprintf("Bicycle [Name=%s, Model=%s, Year=%d]", b.name, b.model, b.year)
 }
+func (b Bicycle) ToJSON() (string, error) {
+	jsonData, err := json.MarshalIndent(struct {
+		Name  string `json:"name"`
+		Model string `json:"model"`
+		Year  int    `json:"year"`
+	}{
+		Name:  b.name,
+		Model: b.model,
+		Year:  b.year,
+	}, "", "  ")
+
+	if err != nil {
+		return "", err
+	}
+	return string(jsonData), nil
+}
 
 type Builder interface {
 	SetName(name string) Builder
