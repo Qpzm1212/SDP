@@ -1,0 +1,50 @@
+@startuml
+skinparam classAttributeIconSize 0
+skinparam monochrome true
+
+interface ExportTask {
+    + Export(filename: string, imageData: []byte): (string, error)
+}
+
+class InstagramExport {
+    + Export(filename: string, imageData: []byte): (string, error)
+}
+
+class PrintExport {
+    + Export(filename: string, imageData: []byte): (string, error)
+}
+
+interface ColorEngine {
+    + ApplyCorrection(imageData: []byte, intensity: float64): ([]byte, error)
+}
+
+class StandardRGBEngine {
+    + ApplyCorrection(imageData: []byte, intensity: float64): ([]byte, error)
+}
+
+class CinematicLUTEngine {
+    + ApplyCorrection(imageData: []byte, intensity: float64): ([]byte, error)
+}
+
+class RawEngineAdapter {
+    - adaptee: *LegacyRawProcessor
+    + ApplyCorrection(imageData: []byte, intensity: float64): ([]byte, error)
+}
+
+class LegacyRawProcessor {
+    + ProcessRAW(rawData: string, contrastLevel: int): (string, int)
+}
+
+note "Dynamic Selection via ResolveEngineFunc" as N1
+ExportTask . N1
+N1 --> ColorEngine : "Bridge"
+
+InstagramExport ..|> ExportTask
+PrintExport ..|> ExportTask
+
+StandardRGBEngine ..|> ColorEngine
+CinematicLUTEngine ..|> ColorEngine
+RawEngineAdapter ..|> ColorEngine
+
+RawEngineAdapter o--> LegacyRawProcessor : "Adapts"
+@enduml
