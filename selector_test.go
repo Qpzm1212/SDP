@@ -26,3 +26,23 @@ func TestSelectorChoosePremium(t *testing.T) {
 		})
 	}
 }
+
+func TestSelectorChoosePayout(t *testing.T) {
+	s := Selector{Risk: fakeRisk{value: 0.5}}
+	tests := []struct {
+		name  string
+		claim Claim
+		want  string
+	}{
+		{"huge claim", Claim{Type: "health", Amount: 20000}, "main.LimitedPayout"},
+		{"car claim", Claim{Type: "car", Amount: 2000}, "main.DeductiblePayout"},
+		{"other claim", Claim{Type: "health", Amount: 2000}, "main.FullPayout"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := fmt.Sprintf("%T", s.ChoosePayout(tt.claim)); got != tt.want {
+				t.Errorf("got %s, want %s", got, tt.want)
+			}
+		})
+	}
+}

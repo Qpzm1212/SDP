@@ -40,8 +40,25 @@ func main() {
 	ctx.SetStrategy(LoyaltyPremium{})
 	fmt.Printf("after:  %.2f\n", ctx.Premium(customer))
 
-	fmt.Println("\n=== Payout (old switch version) ===")
-	for _, kind := range []string{"full", "deductible", "limited"} {
-		fmt.Printf("%-10s for 8000 -> %.2f\n", kind, Payout(kind, 8000))
+	fmt.Println("\n=== 4. Payout: same claim, all strategies ===")
+	claim := Claim{Type: "car", Amount: 8000}
+	payouts := []struct {
+		name     string
+		strategy PayoutStrategy
+	}{
+		{"full", FullPayout{}},
+		{"deductible", DeductiblePayout{}},
+		{"limited", LimitedPayout{}},
+	}
+	for _, p := range payouts {
+		fmt.Printf("%-10s -> %.2f\n", p.name, NewPayoutContext(p.strategy).Payout(claim.Amount))
+	}
+
+	fmt.Println("\n=== 5. Payout: automatic choice and runtime switch ===")
+	payCtx := NewPayoutContext(FullPayout{})
+	claims := []Claim{{"health", 2000}, {"car", 2000}, {"health", 20000}}
+	for _, cl := range claims {
+		payCtx.SetStrategy(selector.ChoosePayout(cl))
+		fmt.Printf("auto %-6s %6.0f -> %.2f (%T)\n", cl.Type, cl.Amount, payCtx.Payout(cl.Amount), selector.ChoosePayout(cl))
 	}
 }

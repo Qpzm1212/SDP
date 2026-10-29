@@ -17,3 +17,13 @@ func (s Selector) ChoosePremium(c Customer) PremiumStrategy {
 	}
 	return StandardPremium{}
 }
+
+func (s Selector) ChoosePayout(cl Claim) PayoutStrategy {
+	if cl.Amount > 10000 {
+		return LimitedPayout{}
+	}
+	if cl.Type == "car" {
+		return DeductiblePayout{}
+	}
+	return FullPayout{}
+}
